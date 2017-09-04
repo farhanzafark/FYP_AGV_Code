@@ -1,4 +1,4 @@
-function [path,cost] = a_star(graph,start,goal)
+function [path,cost] = a_star_1(graph,start,goal)
 %open list all unvisited nodes
 %closed list evaluated nodes
 %list 'f' of the cost of each node
@@ -11,7 +11,7 @@ p = plot(graph,'Layout','force','EdgeLabel',graph.Edges.Weight);
 path = zeros(graph.numnodes,1);
 openList = zeros(1,1);
 openList(1,1) = start;
-closedList = zeros(1);
+closedList = zeros(1,1);
 closedListCount = 1;
 
 cost_f = inf(graph.numnodes,1);
@@ -35,10 +35,6 @@ while ~isempty(openList)
        openList = zeros(1,2);
    end
    
-   %add q to closedList
-   closedList(closedListCount) = q;
-   closedListCount = closedListCount + 1;
-   
    %generate neighbors of q
    N = neighbors(graph,q);
    for i = 1:length(N)
@@ -47,35 +43,49 @@ while ~isempty(openList)
           breakVar = true;
           break;
       end
+      %calculate cost for neighbor
+      tentative_gScore = cost_g(q) + distances(graph,q,N(i));
+      cost_g(N(i)) = tentative_gScore;
+      cost_f(N(i)) = cost_g(N(i))+ abs(p.XData(N(i))-p.XData(goal))+abs(p.YData(N(i))-p.YData(goal)); % + heuristic cost of neighbor
       
-      %if neighbor is not on openList, add to openList
-      if isempty(find(openList(:,1)==N(i), 1))
+      %find neighbor in openList
+      [neighborValue,neighborIndex] = find(openList(:,1)==N(i));
+      if ~isempty(neighborIndex) 
+          if openList(neighborIndex,2) <= cost_f(N(i));
+            break;
+          end
+%       else
+%          path(N(i)) = q;
+%          [elem,ind] = find(openList(:,1)==N(i));
+%          if ~isempty(ind)
+%              openList(ind,2) = cost_f(N(i));
+%          end
+      end
+      
+      %if neighbor is on closedList with a smaller cost_f, skip; else add
+      %to openList
+      [closedListElem,closedListInd] = find(closedList==N(i));
+      if ~isempty(closedListInd)
+            if closedList(neighborIndex,2) <= cost_f(N(i));
+                        break;
+            end
+      else
           if m == 1
               openList(m,:) = [N(i),cost_f(N(i))];
           else
               openList(m+1,:) = [N(i),cost_f(N(i))];
           end
+          path(N(i)) = q;
       end
-      tentative_gScore = cost_g(q) + distances(graph,q,N(i));
-      cost_g(N(i)) = tentative_gScore;
-      cost_f(N(i)) = cost_g(N(i))+ abs(p.XData(N(i))-p.XData(goal))+abs(p.YData(N(i))-p.YData(goal)); % + heuristic cost of neighbor
-      if tentative_gScore >= cost_g(N(i)) && ~isempty(find(closedList==N(i)))
-          break;
-      else
-         path(N(i)) = q;
-          
-         
-         [elem,ind] = find(openList(:,1)==N(i));
-         if ~isempty(ind)
-             openList(ind,2) = cost_f(N(i));
-         end
-         
-      end
+      
       if breakVar
           break;
       end
    end
    if breakVar
           break;
-      end
+   end
+   %add q to closedList
+   closedList(closedListCount,:) = q;
+   closedListCount = closedListCount + 1;
 end
