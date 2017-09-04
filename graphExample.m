@@ -2,7 +2,7 @@ function H = graphExample()
 n = 10; 
 A = delsq(numgrid('L',n+2));
 H = graph(A,'OmitSelfLoops');
-plot(H)
+plot(H);
 
 % plot(H,'Layout','layered')
 % plot(H,'Layout','circle')
@@ -28,5 +28,5 @@ H.Edges.Weight = randi(10,130,1);
 p = plot(H,'Layout','force','EdgeLabel',H.Edges.Weight)
 path1 = shortestpath(H,1,75);
 path2 = shortestpath(H,1,58);
-highlight(p,path2,'EdgeColor','r','LineWidth',1)
-highlight(p,path1,'EdgeColor','g')
+% highlight(p,path2,'EdgeColor','r','LineWidth',1);
+% highlight(p,path1,'EdgeColor','g');

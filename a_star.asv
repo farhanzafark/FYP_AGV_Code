@@ -40,7 +40,7 @@ while ~isempty(openList)
           break;
       end
       
-      %if neighbor is not on openList, add to openList
+      %if neig
       if isempty(find(openList(:,1)==N(i), 1))
           if m == 1
               openList(m,:) = [N(i),cost_f(N(i))];
@@ -49,7 +49,7 @@ while ~isempty(openList)
           end
       end
       tentative_gScore = cost_g(q) + distances(graph,q,N(i));
-      if tentative_gScore >= cost_g(N(i)) && ~isempty(find(closedList==N(i)))
+      if tentative_gScore >= cost_g(N(i))
           
       else
          path(N(i)) = q;
