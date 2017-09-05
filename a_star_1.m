@@ -1,10 +1,12 @@
-function [path,closedList] = a_star_1(graph,start,goal)
+function [path,closedList,pathToGoal] = a_star_1(graph,start,goal)
 %open list all unvisited nodes
 %closed list evaluated nodes
 %list 'f' of the cost of each node
 
 %variable to track break condition
 breakVar = false;
+
+pathToGoal = [];
 
 p = plot(graph,'Layout','force','EdgeLabel',graph.Edges.Weight);
 
@@ -40,7 +42,10 @@ while ~isempty(openList)
    for i = 1:length(N)
        %if successor is the goal, stop
       if N(i) == goal
+          path(N(i)) = q;
           breakVar = true;
+          pathToGoal = reconstructPath(path,goal);
+          highlight(p,pathToGoal,'EdgeColor','r','LineWidth',1.5)
           break;
       end
       %calculate cost for neighbor
@@ -81,4 +86,15 @@ while ~isempty(openList)
    if breakVar
           break;
    end
+end
+end
+
+function pathToGoal = reconstructPath(path,goal)
+    pathToGoal = [];
+    pathToGoal(end+1) = goal;    
+    q = path(goal);
+    while q~=0
+        pathToGoal(end + 1) = q;
+        q = path(q);
+    end
 end
